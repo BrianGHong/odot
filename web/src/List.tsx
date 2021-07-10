@@ -1,5 +1,5 @@
 import React, { useState} from "react";
-import { AppBar, Box, Button, Checkbox, Container, createMuiTheme, createStyles, createTheme, Dialog, DialogActions, DialogContent, DialogTitle, Fab, FormControl, Grid, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, makeStyles, Paper, Switch, TextField, Theme, ThemeProvider, Toolbar, Typography } from "@material-ui/core";
+import { AppBar, Button, Checkbox, Container, createTheme, Dialog, DialogActions, DialogContent, DialogTitle, Fab, FormControl, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Paper, TextField, ThemeProvider, Toolbar, Typography } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
 import Brightness4Icon from "@material-ui/icons/Brightness4";
@@ -161,7 +161,6 @@ const MainList: React.FC<Props> = (props: Props) => {
                   error={(state.content === "" && state.addTaskErrors) ? true : false}
                   helperText={(state.content === "" && state.addTaskErrors) ? "Must not be empty." : ""}
                   onKeyUp={(e) => e.keyCode === 13 && addItem(state.content)} // Getting around textfield's newline, use enter to submit
-                  autoFocus
                   variant="outlined"
                   id="content"
                   label=""

@@ -25,7 +25,7 @@ export const useStyles = makeStyles((theme: Theme) =>
       textAlign: "center"
     },
     formControl: {
-      minWidth: 350,
+      width: "100%"
     },
     themeButton: {
       color: "white"
