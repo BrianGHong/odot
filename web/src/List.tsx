@@ -5,6 +5,7 @@ import AddIcon from "@material-ui/icons/Add";
 import Brightness4Icon from "@material-ui/icons/Brightness4";
 import Brightness3Icon from "@material-ui/icons/Brightness3";
 import { useStyles } from './styles';
+import { useEffect } from "react";
 
 interface Props { };
 interface ListItem {
@@ -15,23 +16,29 @@ interface ListItem {
 
 const MainList: React.FC<Props> = (props: Props) => {
   const classes = useStyles();
-  // Sample items
-  const starter: ListItem[] = [
-    {id: "qlnwsb3twci", content: "This is an example task!", done: true },
-    {id: "nn544fsun3j", content: "This is task that has yet to be done!", done: false },
-    {id: "sd89gn4uid3", content: "Why don't you try adding tasks of your own?", done: false },
-    {id: "d8vhj30dik3", content: "Feel free to delete me, I won't get offended... 🥲", done: false },
-    {id: "fdsi4nu2nfs", content: "Sign-in and persistence coming soon!", done: false },
-  ];
 
   // State
-  let [state, setState] = useState({
+  const defaultList: ListItem[] = [];
+  const defaultState = {
     usingDarkMode: false,
-    list: starter,
+    list: defaultList,
     addTaskOpen: false,
     addTaskErrors: false,
     content: "",
-  });
+  }
+  let [state, setState] = useState(defaultState);
+
+  // Set state and store
+  const saveStateAndSession = (newState: any) => {
+    setState(newState);
+    localStorage.setItem('odot_state', JSON.stringify(newState));
+  }
+
+  // On load, fetch store
+  useEffect(() => {
+    const loadedState = localStorage.getItem('odot_state');
+    setState(loadedState ? JSON.parse(loadedState) : defaultState);
+  }, []);
 
   // Themes
   const theme = createTheme({
@@ -67,16 +74,17 @@ const MainList: React.FC<Props> = (props: Props) => {
       if (state.list.filter((e:ListItem) => e.id === newId).length > 0) {
         addItem(content);
       }
-      newList.push({ id: newId, content: content, done: false });
+      const newItem:ListItem = { id: newId, content: content, done: false }
+      newList.push(newItem);
 
-      setState({
+      saveStateAndSession({
         ...state,
         addTaskOpen: false,
         addTaskErrors: false,
         content: ""
       });
     } else {
-      setState({...state, addTaskErrors: true});
+      saveStateAndSession({...state, addTaskErrors: true});
     }
   }
 
@@ -86,7 +94,7 @@ const MainList: React.FC<Props> = (props: Props) => {
    */
   const checkItem = (id: string) => {
     const newList = state.list.map((item:ListItem) => (item.id === id ? Object.assign({}, item, { done: !item.done }) : item));
-    setState({...state, list: newList});
+    saveStateAndSession({...state, list: newList});
   }
 
   /**
@@ -94,8 +102,15 @@ const MainList: React.FC<Props> = (props: Props) => {
    * @param id id of list item to delete
    */
   const deleteItem = (id: string) => {
-    const newList = state.list.filter(ele => ele.id != id);
-    setState({...state, list: newList});
+    const newList = state.list.filter((ele:ListItem) => ele.id !== id);
+    saveStateAndSession({...state, list: newList});
+  }
+
+  /**
+   * Toggles dark mode of app
+   */
+  const toggleDarkMode = () => {
+    saveStateAndSession({...state, usingDarkMode: !state.usingDarkMode});
   }
 
   return (
@@ -109,7 +124,7 @@ const MainList: React.FC<Props> = (props: Props) => {
                 <b>odot</b>
               </Typography>
               <div className={classes.grow} />
-              <IconButton edge="end" className={classes.themeButton} onClick={() => setState({...state, usingDarkMode: !state.usingDarkMode})}>
+              <IconButton edge="end" className={classes.themeButton} onClick={() => toggleDarkMode()}>
                 { state.usingDarkMode ? <Brightness3Icon /> : <Brightness4Icon /> }
               </IconButton>
             </Toolbar>
@@ -169,13 +184,13 @@ const MainList: React.FC<Props> = (props: Props) => {
                   multiline
                   maxRows={5}
                   value={state.content}
-                  onChange={(e) => setState({...state, content: e.target.value})}
+                  onChange={(e) => saveStateAndSession({...state, content: e.target.value})}
                 />
               </FormControl>
             </DialogContent>
             <DialogActions>
               <Button onClick={() => {
-                setState({
+                saveStateAndSession({
                   ...state,
                   content: "",
                   addTaskOpen: false,
