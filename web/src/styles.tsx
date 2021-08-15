@@ -17,7 +17,8 @@ export const useStyles = makeStyles((theme: Theme) =>
     fab: {
       position: "fixed",
       bottom: 15,
-      left: "45vw"
+      left: 50%,
+      transform: translateX(-50%)
     },
     emptyTodo: {
       color: "gray",
